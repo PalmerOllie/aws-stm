@@ -28,5 +28,15 @@ Resources:
       Timeout: 100
       Description: A Lambda function that returns a static string.
       Policies:
-        # Give Lambda basic execution Permission to the helloFromLambda
         - AWSLambdaBasicExecutionRole
+      Events:
+        Hello:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+
+Outputs:
+  AddressApi:
+    Description: "API Gateway endpoint URL for Prod stage GreetingFunction"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello"

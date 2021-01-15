@@ -13,4 +13,15 @@ Resources:
       Description: A Lambda function that returns a static string.
       Policies:
       - AWSLambdaBasicExecutionRole
+      Events:
+        Hello:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
       CodeUri: helloFromLambdaFunction
+Outputs:
+  AddressApi:
+    Description: API Gateway endpoint URL for Prod stage GreetingFunction
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello
