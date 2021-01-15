@@ -3,10 +3,10 @@ Description: aws-stm-sam-app
 Transform:
 - AWS::Serverless-2016-10-31
 Resources:
-  helloFromLambdaFunction:
+  appDetailsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/hello-from-lambda.helloFromLambdaHandler
+      Handler: src/handlers/appDetails.getDetails
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
@@ -17,11 +17,11 @@ Resources:
         Hello:
           Type: Api
           Properties:
-            Path: /hello
+            Path: /appDetails
             Method: get
-      CodeUri: helloFromLambdaFunction
+      CodeUri: appDetailsFunction
 Outputs:
   AddressApi:
-    Description: API Gateway endpoint URL for Prod stage GreetingFunction
+    Description: API Gateway endpoint URL. Returns AppDetails.
     Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/appDetails
