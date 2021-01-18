@@ -1,7 +1,7 @@
-const appDetailsLambda = require('../../../src/handlers/getAppDetails.js');
+const appDetailsLambda = require('../../../src/handlers/appDetails.js');
 
 // This includes all tests for appDetails handler
-describe('Test for getAppDetails handler', function () {
+describe('Test for appDetails handler', function () {
     it('Verifies data successfully retrieved', async () => {
         const mockEvent = { pathParameters: { appId: 212680 }}; //appId for 'FTL: Faster Than Light'
         const result = await appDetailsLambda.handler(mockEvent);
@@ -19,4 +19,7 @@ describe('Test for getAppDetails handler', function () {
         const resultDevelopers = appData.key_info.developers;
         expect(resultDevelopers).toEqual(expectedDevelopers);
     });
+
+
+   
 });
