@@ -1,17 +1,14 @@
 const AWS = require('aws-sdk');
 AWS.config.update({ region: 'us-east-1' });
 
-let helpers = require('./helpers');
+const helpers = require('./helpers');
 const inspect = helpers.inspect;
 const getJsonFromRequest = helpers.getJsonFromRequest;
-
 const steamUrlReviewsEndpoint = (appId) => { return `https://store.steampowered.com/appreviews/${appId}?json=1&purchase_type=all&language=all`; }
 const steamUrlAppDetailsEndpoint = (appId) => { return `https://store.steampowered.com/api/appdetails?appids=${appId}&purchase_type=all&language=all`; }
 
-/**
- * Retieves details (Name, Price, Genre) given a Steam Game appID. 
- */
-let getDetails = async function(event, context) {
+/** Retieves details (Name, Price, Genre) given a Steam Game appID. */
+let handler = async function(event, context) {
     inspect(event);
     inspect(event.pathParameters);
     console.log(event.pathParameters);
@@ -28,7 +25,6 @@ let getDetails = async function(event, context) {
     //Retieve JSON
     let rawAppReviewJson = await getJsonFromRequest(steamUrlReviewsEndpoint(appId));
     rawAppReviewJson.reviews = ""; //Remove 20+ reviews for easier console logging
-    // console.log(rawAppDetailJson);
     let rawAppDetailJson = await getJsonFromRequest(steamUrlAppDetailsEndpoint(appId));
 
     //Build object using retieved JSON
@@ -95,4 +91,4 @@ function addAppDetailsJsonDataToObject(rawAppDetailJson, collectedAppData) {
 }
 
 //getDetails();
-exports.handler = getDetails;
+exports.handler = handler;
