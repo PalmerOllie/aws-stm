@@ -17,41 +17,35 @@ Transform:
 Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-
-  # # This is a Lambda function config associated with the source code: hello-from-lambda.js
-  # helloFromLambdaFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     Handler: src/handlers/hello-from-lambda.helloFromLambdaHandler
-  #     Runtime: nodejs12.x
-  #     MemorySize: 128
-  #     Timeout: 100
-  #     Description: A Lambda function that returns a static string.
-  #     Policies:
-  #       - AWSLambdaBasicExecutionRole
-  #     Events:
-  #       Hello:
-  #         Type: Api
-  #         Properties:
-  #           Path: /hello
-  #           Method: get
-
   appDetailsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/appDetails.getDetails
+      Handler: src/handlers/appDetails.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
       Description: A Lambda function that returns a static string.
       Policies:
         - AWSLambdaBasicExecutionRole
+        - AmazonDynamoDBFullAccess
+      # Environment:
+      #   Variables:
+      #     dynamodb_table: !Ref steamAppDB
       Events:
-        Hello:
+        getAppDetails:
           Type: Api
           Properties:
-            Path: /appDetails
+            Path: /appDetails/{appId}
             Method: get
+  # steamAppDB:
+  #   Type: AWS::Serverless::SimpleTable
+  #   PrimaryKey:
+  #     Name: id
+  #     Type: String
+  #   ProvisionedThroughput:
+  #     ReadCapacityUnits: 5
+  #     WriteCapacityUnits: 5
+          
 Outputs:
   AddressApi:
     Description: "API Gateway endpoint URL. Returns AppDetails."

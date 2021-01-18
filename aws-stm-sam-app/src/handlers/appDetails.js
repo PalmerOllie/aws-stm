@@ -11,9 +11,19 @@ const steamUrlAppDetailsEndpoint = (appId) => { return `https://store.steampower
 /**
  * Retieves details (Name, Price, Genre) given a Steam Game appID. 
  */
-exports.getDetails = async (event) => {
-    let appId = 861540; //TODO: Allow dynamic appId (pass into function)
+let getDetails = async function(event, context) {
+    inspect(event);
+    inspect(event.pathParameters);
+    console.log(event.pathParameters);
+    let appId = event.pathParameters.appId;//861540; //TODO: Allow dynamic appId (pass into function)
     //For future use to obtain appIds: https://api.steampowered.com/ISteamApps/GetAppList/v2/
+    if(appId == undefined) {
+        return {
+            statusCode: 200,
+            headers: {},
+            body: "No appId specified."
+        };
+    }
 
     //Retieve JSON
     let rawAppReviewJson = await getJsonFromRequest(steamUrlReviewsEndpoint(appId));
@@ -40,11 +50,6 @@ exports.getDetails = async (event) => {
 }
 
 
-
-
-
-
-
 /** Adds review data to object from raw JSON from steamUrlEndpoint */
 function addAppReviewJsonDataToObject(rawAppReviewJson, collectedAppData) {
     collectedAppData.reviews = {};
@@ -53,7 +58,7 @@ function addAppReviewJsonDataToObject(rawAppReviewJson, collectedAppData) {
     collectedAppData.reviews.positive_reviews = rawAppReviewJson.query_summary.total_positive;
     collectedAppData.reviews.negative_reviews = rawAppReviewJson.query_summary.total_negative;
 
-    console.log("Adding Review Data....:")
+    // console.log("Adding Review Data....:")
     // inspect(collectedAppData.reviews);
     return collectedAppData;
 }
@@ -82,11 +87,12 @@ function addAppDetailsJsonDataToObject(rawAppDetailJson, collectedAppData) {
         console.log("No genres found for appId:" + collectedAppData.key_info.appId);
     }
 
-    console.log("Adding AppDetails Data....:")
+    // console.log("Adding AppDetails Data....:")
     // inspect(rawAppDetailJson);
     // inspect(collectedAppData.key_info);
     // inspect(collectedAppData.support_info);
     return collectedAppData;
 }
 
-exports.getDetails();
+//getDetails();
+exports.handler = getDetails;

@@ -1,26 +1,22 @@
-// Import all functions from hello-from-lambda.js
-const lambda = require('../../../src/handlers/hello-from-lambda.js');
+const appDetailsLambda = require('../../../src/handlers/appDetails.js');
 
-// This includes all tests for helloFromLambdaHandler()
-describe('Test for hello-from-lambda', function () {
-    // This test invokes helloFromLambdaHandler() and compare the result 
-    it('Verifies successful response', async () => {
-        // Invoke helloFromLambdaHandler()
-        const result = await lambda.helloFromLambdaHandler();
-        /* 
-            The expected result should match the return from your Lambda function.
-            e.g. 
-            if you change from `const message = 'Hello from Lambda!';` to `const message = 'Hello World!';` in hello-from-lambda.js
-            you should change the following line to `const expectedResult = 'Hello World!';`
-        */
-        const expectedResult = {
-            statusCode: 200,
-            headers: {
-                "x-custom-header" : "x-custom-value"
-            },
-            body: "\nHello from Lambda!\n"
-        };
-        // Compare the result with the expected result
-        expect(result).toEqual(expectedResult);
+// This includes all tests for appDetails handler
+describe('Test for appDetails handler', function () {
+    it('Verifies data successfully retrieved', async () => {
+        const mockEvent = { pathParameters: { appId: 212680 }}; //appId for 'FTL: Faster Than Light'
+        const result = await appDetailsLambda.handler(mockEvent);
+        const appData = JSON.parse(result.body);
+
+        const expectedName = 'FTL: Faster Than Light'; 
+        const resultName = appData.key_info.app_name;
+        expect(resultName).toEqual(expectedName);
+
+        const expectedReleaseDate = '14 Sep, 2012';
+        const resultReleaseDate = appData.key_info.release_date;
+        expect(resultReleaseDate).toEqual(expectedReleaseDate);
+
+        const expectedDevelopers = ['Subset Games'];
+        const resultDevelopers = appData.key_info.developers;
+        expect(resultDevelopers).toEqual(expectedDevelopers);
     });
 });

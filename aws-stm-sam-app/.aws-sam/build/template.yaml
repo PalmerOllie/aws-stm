@@ -6,18 +6,19 @@ Resources:
   appDetailsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/appDetails.getDetails
+      Handler: src/handlers/appDetails.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
       Description: A Lambda function that returns a static string.
       Policies:
       - AWSLambdaBasicExecutionRole
+      - AmazonDynamoDBFullAccess
       Events:
-        Hello:
+        getAppDetails:
           Type: Api
           Properties:
-            Path: /appDetails
+            Path: /appDetails/{appId}
             Method: get
       CodeUri: appDetailsFunction
 Outputs:
