@@ -1,3 +1,32 @@
+const AWS = require('aws-sdk');
+AWS.config.update({ region: 'us-east-1' });
+var ssm = new AWS.SSM();
+
+// const kms = new aws.KMS({
+//     accessKeyId: 'someLetterskfDJWJFNdndej',
+//     secretAccessKey: 'someNums029487589220304',
+//     region: 'ap-southeast-1'
+// });
+
+function getSecret() {
+    var params = {
+        Name: 'testParam', /* required */
+        WithDecryption: true || false
+    };
+
+    let secret = {};
+
+    ssm.getParameter(params, function(err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        else     {
+            secret = data;
+            inspect(data.Parameter);
+        }
+    });
+
+    return data.Parameter.Value;
+}
+
 const steamUrlReviewsEndpoint = (appId) => { return `https://store.steampowered.com/appreviews/${appId}?json=1&purchase_type=all&language=all`; }
 const steamUrlAppDetailsEndpoint = (appId) => { return `https://store.steampowered.com/api/appdetails?appids=${appId}&purchase_type=all&language=all`; }
 const https = require('https');
@@ -118,4 +147,4 @@ function addAppDetailsJsonDataToObject(rawAppDetailJson, collectedAppData) {
 }
 
 
-// exports.getDetails();
+exports.getDetails();
