@@ -1,35 +1,12 @@
 const AWS = require('aws-sdk');
 AWS.config.update({ region: 'us-east-1' });
-var ssm = new AWS.SSM();
 
-// const kms = new aws.KMS({
-//     accessKeyId: 'someLetterskfDJWJFNdndej',
-//     secretAccessKey: 'someNums029487589220304',
-//     region: 'ap-southeast-1'
-// });
-
-function getSecret() {
-    var params = {
-        Name: 'testParam', /* required */
-        WithDecryption: true || false
-    };
-
-    let secret = {};
-
-    ssm.getParameter(params, function(err, data) {
-        if (err) console.log(err, err.stack); // an error occurred
-        else     {
-            secret = data;
-            inspect(data.Parameter);
-        }
-    });
-
-    return data.Parameter.Value;
-}
+let helpers = require('./helpers');
+const inspect = helpers.inspect;
+const getJsonFromRequest = helpers.getJsonFromRequest;
 
 const steamUrlReviewsEndpoint = (appId) => { return `https://store.steampowered.com/appreviews/${appId}?json=1&purchase_type=all&language=all`; }
 const steamUrlAppDetailsEndpoint = (appId) => { return `https://store.steampowered.com/api/appdetails?appids=${appId}&purchase_type=all&language=all`; }
-const https = require('https');
 
 /**
  * Retieves details (Name, Price, Genre) given a Steam Game appID. 
@@ -39,10 +16,10 @@ exports.getDetails = async (event) => {
     //For future use to obtain appIds: https://api.steampowered.com/ISteamApps/GetAppList/v2/
 
     //Retieve JSON
-    let rawAppReviewJson = await getDataFromRequest(steamUrlReviewsEndpoint(appId));
+    let rawAppReviewJson = await getJsonFromRequest(steamUrlReviewsEndpoint(appId));
     rawAppReviewJson.reviews = ""; //Remove 20+ reviews for easier console logging
     // console.log(rawAppDetailJson);
-    let rawAppDetailJson = await getDataFromRequest(steamUrlAppDetailsEndpoint(appId));
+    let rawAppDetailJson = await getJsonFromRequest(steamUrlAppDetailsEndpoint(appId));
 
     //Build object using retieved JSON
     let collectedAppData = {};
@@ -59,50 +36,16 @@ exports.getDetails = async (event) => {
         body: JSON.stringify(collectedAppData)
     };
     
-    // All log statements are written to CloudWatch
-    // console.info(`${message}`);
     return message;
 }
 
 
-async function getDataFromRequest(url) {
-    let dataString = "";
-    const response = await new Promise((resolve, reject) => {
-        const req = https.get(url, function(res) {
-          res.on('data', chunk => {
-            dataString += chunk;
-          });
-          res.on('end', () => {
-            resolve({
-                statusCode: 200,
-                body: JSON.stringify(JSON.parse(dataString), null, 4)
-            });
-          });
-        });
-        
-        req.on('error', (e) => {
-          reject({
-              statusCode: 500,
-              body: 'Something went wrong!'
-          });
-        });
-    });
-
-    return JSON.parse(dataString);
-}
-
-//Helper function to view JS objects 
-const inspect = obj => {
-    for (const prop in obj) {
-      if (obj.hasOwnProperty(prop)) {
-        console.log(`${prop}: ${obj[prop]}`)
-      }
-    }
-    console.log("");
-  }
 
 
-//Adds review date to object from raw JSON from steamUrlEndpoint
+
+
+
+/** Adds review data to object from raw JSON from steamUrlEndpoint */
 function addAppReviewJsonDataToObject(rawAppReviewJson, collectedAppData) {
     collectedAppData.reviews = {};
     collectedAppData.reviews.review_score =  rawAppReviewJson.query_summary.review_score;
@@ -115,10 +58,10 @@ function addAppReviewJsonDataToObject(rawAppReviewJson, collectedAppData) {
     return collectedAppData;
 }
 
-//Adds appDetails (app_name, prices, developer) to object from raw JSON from steamUrlEndpoint
+/** Adds appDetails (app_name, prices, developer) to object from raw JSON from steamUrlEndpoint */
 function addAppDetailsJsonDataToObject(rawAppDetailJson, collectedAppData) {
     rawAppDetailJson = rawAppDetailJson[collectedAppData.key_info.appId].data;
-
+    
     collectedAppData.key_info.app_name = rawAppDetailJson.name;
     collectedAppData.key_info.app_type = rawAppDetailJson.type;
     collectedAppData.key_info.price_initial = rawAppDetailJson.price_overview.initial;
@@ -145,6 +88,5 @@ function addAppDetailsJsonDataToObject(rawAppDetailJson, collectedAppData) {
     // inspect(collectedAppData.support_info);
     return collectedAppData;
 }
-
 
 exports.getDetails();
