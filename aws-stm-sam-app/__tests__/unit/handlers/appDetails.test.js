@@ -1,4 +1,5 @@
 const appDetailsLambda = require('../../../src/handlers/appDetails.js');
+const { inspect } = require('../../../src/helpers.js');
 
 // This includes all tests for appDetails handler
 describe('Test for appDetails handler', function () {

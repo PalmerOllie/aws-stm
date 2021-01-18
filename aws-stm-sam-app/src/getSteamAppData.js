@@ -6,7 +6,7 @@ const steamUrlReviewsEndpoint = (appId) => { return `https://store.steampowered.
 const steamUrlAppDetailsEndpoint = (appId) => { return `https://store.steampowered.com/api/appdetails?appids=${appId}&purchase_type=all&language=all`; }
 
 /** Retrieves, parses and returns Steam App Data */
-function getSteamAppData(appId) {
+async function getSteamAppData(appId) {
     //Retieve JSON
     let rawAppReviewJson = await getJsonFromRequest(steamUrlReviewsEndpoint(appId));
     rawAppReviewJson.reviews = ""; //Remove 20+ reviews for easier console logging
@@ -61,7 +61,7 @@ function addAppDetailsJsonDataToObject(rawAppDetailJson, collectedAppData) {
 
    // console.log("Adding AppDetails Data....:")
    // inspect(rawAppDetailJson);
-   // inspect(collectedAppData.key_info);
+//    inspect(collectedAppData.key_info);
    // inspect(collectedAppData.support_info);
    return collectedAppData;
 }
