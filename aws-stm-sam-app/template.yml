@@ -37,14 +37,19 @@ Resources:
           Properties:
             Path: /appDetails/{appId}
             Method: get
-  # steamAppDB:
-  #   Type: AWS::Serverless::SimpleTable
-  #   PrimaryKey:
-  #     Name: id
-  #     Type: String
-  #   ProvisionedThroughput:
-  #     ReadCapacityUnits: 5
-  #     WriteCapacityUnits: 5
+        saveAppDetails:
+          Type: Api
+          Properties:
+            Path: /appDetails/{appId}
+            Method: post
+  steamAppDB:
+    Type: AWS::Serverless::SimpleTable
+    PrimaryKey:
+      Name: id
+      Type: String
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
           
 Outputs:
   AddressApi:
